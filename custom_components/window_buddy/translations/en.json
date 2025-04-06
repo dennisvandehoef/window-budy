@@ -3,7 +3,7 @@
         "step": {
             "user": {
                 "title": "Window Buddy Setup",
-                "description": "Configure your window settings. Choose a calculation method: Simple (azimuth only) or Precise (advanced configuration with blockades).",
+                "description": "Configure your window settings. Choose a calculation method: Simple (azimuth only) or Precise (advanced configuration with blockades)."
             },
             "azimuth": {
                 "title": "Window Azimuth",
