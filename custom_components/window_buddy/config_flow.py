@@ -1,27 +1,81 @@
 from __future__ import annotations
+
+from typing import Any
+
 import voluptuous as vol
+
 from homeassistant import config_entries
-from homeassistant.const import CONF_NAME, CONF_ENTITY_ID
+from homeassistant.const import CONF_ENTITY_ID, CONF_NAME
+from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.selector import (
+    TextSelector,
+    EntitySelector,
+    EntitySelectorConfig,
+    SelectSelector,
+    SelectSelectorConfig,
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
+)
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_CALCULATION_MODE, CONF_AZIMUTH, CONF_WIDTH, CONF_HEIGHT
 
-class WindowBuddyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Window Buddy."""
+CALCULATION_MODES = ["simple", "precise"]
+
+
+class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
-    async def async_step_user(
-        self, user_input: dict | None = None
-    ) -> config_entries.FlowResult:
-        """Handle the initial step."""
+    def __init__(self) -> None:
+        self._user_input: dict[str, Any] = {}
+
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """First step: Get name, sun entity, and calculation method."""
         if user_input is not None:
-            return self.async_create_entry(title=user_input[CONF_NAME], data=user_input)
+            self._user_input.update(user_input)
+            return await self.async_step_mode_specific()
 
-        schema = vol.Schema({
-            vol.Required(CONF_NAME, default="Window 1"): str,
-            vol.Required("width"): vol.All(int, vol.Range(min=1)),
-            vol.Required("height"): vol.All(int, vol.Range(min=1)),
-            vol.Required("azimuth"): vol.All(int, vol.Range(min=0, max=360)),
-            vol.Optional(CONF_ENTITY_ID, default="sun.sun"): str,
-        })
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema({
+                vol.Required(CONF_NAME): TextSelector(),
+                vol.Required(CONF_ENTITY_ID): EntitySelector(
+                    EntitySelectorConfig(domain=["sun"])
+                ),
+                vol.Required(CONF_CALCULATION_MODE, default="simple"): SelectSelector(
+                    SelectSelectorConfig(
+                        options=CALCULATION_MODES,
+                        translation_key="calculation_mode"
+                    )
+                ),
+            })
+        )
 
-        return self.async_show_form(step_id="user", data_schema=schema)
+    async def async_step_mode_specific(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Second step: Get azimuth or width/height depending on mode."""
+        if user_input is not None:
+            self._user_input.update(user_input)
+            return self.async_create_entry(title=self._user_input[CONF_NAME], data=self._user_input)
+
+        mode = self._user_input[CONF_CALCULATION_MODE]
+
+        schema = {
+            vol.Required(CONF_AZIMUTH): NumberSelector(
+                NumberSelectorConfig(min=0, max=360, step=1, mode=NumberSelectorMode.BOX)
+            )
+        }
+
+        if mode == "precise":
+            schema.update({
+                vol.Required(CONF_WIDTH): NumberSelector(
+                    NumberSelectorConfig(min=0.1, max=10, step=0.1, mode=NumberSelectorMode.BOX)
+                ),
+                vol.Required(CONF_HEIGHT): NumberSelector(
+                    NumberSelectorConfig(min=0.1, max=10, step=0.1, mode=NumberSelectorMode.BOX)
+                ),
+            })
+
+        return self.async_show_form(
+            step_id="mode_specific",
+            data_schema=vol.Schema(schema),
+        )

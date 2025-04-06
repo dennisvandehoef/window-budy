@@ -1,7 +1,34 @@
 {
-    "title": "Window Buddy",
-    "width": "Width",
-    "height": "Height",
-    "azimuth": "Azimuth",
-    "entity_id": "Sun Entity"
+    "config": {
+        "step": {
+            "user": {
+                "title": "Window Buddy Setup",
+                "description": "Choose how Window Buddy should estimate sun exposure.\n\n**Simple**: Only considers the sun's position (azimuth).\n**Precise**: Also considers window dimensions and will later support blocking objects."
+            },
+            "mode_specific": {
+                "title": "Calculation Details",
+                "description": "Enter azimuth and, if using precise mode, the window's width and height."
+            }
+        },
+        "selector": {
+            "calculation_mode": {
+                "simple": "Simple (Azimuth only)",
+                "precise": "Precise (Azimuth + Window size)"
+            },
+            "azimuth": "Window Facing Azimuth (°)",
+            "width": "Window Width",
+            "height": "Window Height"
+        }
+    },
+    "entity": {
+        "sensor": {
+            "window_buddy_sensor": {
+                "name": "Sun Exposure",
+                "state": {
+                    "unit_of_measurement": "Exposure",
+                    "default": "Unknown"
+                }
+            }
+        }
+    }
 }
