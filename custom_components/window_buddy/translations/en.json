@@ -3,21 +3,37 @@
         "step": {
             "user": {
                 "title": "Window Buddy Setup",
-                "description": "Choose how Window Buddy should estimate sun exposure.\n\n**Simple**: Only considers the sun's position (azimuth).\n**Precise**: Also considers window dimensions and supports blocking objects."
+                "description": "Configure your window settings. Choose a calculation method: Simple (azimuth only) or Precise (advanced configuration with blockades).",
             },
-            "mode_specific": {
-                "title": "Calculation Details",
-                "description": "Enter azimuth and, if using precise mode, the window's width and height."
+            "azimuth": {
+                "title": "Window Azimuth",
+                "description": "Enter the window's facing azimuth (0–360°). This determines the direction your window faces."
+            },
+            "precise_extra": {
+                "title": "Advanced Precise Configuration",
+                "description": "Enter the window's width and height. Optionally, configure blockades for each side (Left, Right, Top, Bottom). For each direction, you may provide:\n• A side distance (distance from the window's edge),\n• A distance away (how far the obstacle is from the window),\n• An angle (obstacle orientation).\nFor all measurements, use the same unit (e.g. cm or inches)."
             }
         },
         "selector": {
             "calculation_mode": {
                 "simple": "Simple (Azimuth only)",
-                "precise": "Precise (Azimuth + Window size)"
+                "precise": "Precise (Advanced configuration)"
             },
             "azimuth": "Window Facing Azimuth (°)",
             "width": "Window Width",
-            "height": "Window Height"
+            "height": "Window Height",
+            "block_left_side": "Left Blockade – Side Distance",
+            "block_left_away": "Left Blockade – Distance Away",
+            "block_left_angle": "Left Blockade – Angle",
+            "block_right_side": "Right Blockade – Side Distance",
+            "block_right_away": "Right Blockade – Distance Away",
+            "block_right_angle": "Right Blockade – Angle",
+            "block_top_side": "Top Blockade – Side Distance",
+            "block_top_away": "Top Blockade – Distance Away",
+            "block_top_angle": "Top Blockade – Angle",
+            "block_bottom_side": "Bottom Blockade – Side Distance",
+            "block_bottom_away": "Bottom Blockade – Distance Away",
+            "block_bottom_angle": "Bottom Blockade – Angle"
         }
     },
     "entity": {
@@ -25,7 +41,7 @@
             "window_buddy_sensor": {
                 "name": "Sun Exposure",
                 "state": {
-                    "unit_of_measurement": "Exposure",
+                    "unit_of_measurement": "%",
                     "default": "Unknown"
                 }
             }

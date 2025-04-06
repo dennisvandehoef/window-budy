@@ -1,0 +1,16 @@
+{
+    "name": "Window Buddy",
+    "domain": "window_buddy",
+    "documentation": "https://github.com/dennisvandehoef/window-budy/blob/main/README.md",
+    "issue_tracker": "https://github.com/dennisvandehoef/window-budy/issues",
+    "codeowners": [
+        "@dennisvandehoef"
+    ],
+    "requirements": [],
+    "version": "0.1.0",
+    "config_flow": true,
+    "iot_class": "calculated",
+    "integration_type": "integration",
+    "is_sidepanel": false,
+    "render_readme": true
+}

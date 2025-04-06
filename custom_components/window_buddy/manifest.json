@@ -1,11 +1,12 @@
 {
     "domain": "window_buddy",
     "name": "Window Buddy",
-    "version": "0.1.0",
-    "documentation": "https://example.com",
+    "version": "0.0.1",
+    "documentation": "https://github.com/dennisvandehoef/window-budy",
+    "issue_tracker": "https://github.com/dennisvandehoef/window-budy/issues",
     "dependencies": [],
     "codeowners": [
-        "@yourusername"
+        "@dennisvandehoef"
     ],
     "config_flow": true,
     "iot_class": "local_polling"
