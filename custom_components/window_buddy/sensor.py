@@ -24,6 +24,8 @@ class WindowBuddySensor(SensorEntity):
 
     _attr_has_entity_name = True
     _attr_translation_key = "window_buddy_sensor"
+    _attr_icon = "mdi:sun-angle-outline"
+    _attr_native_unit_of_measurement = "%"
 
     def __init__(self, entry: ConfigEntry) -> None:
         """Initialize the sensor."""
@@ -64,6 +66,9 @@ class WindowBuddySensor(SensorEntity):
         if sun is None:
             return 0.0
 
+        if self._get_sun_elevation() < 0:
+            return 0.0
+
         # Unwrap the angles so that we have a continuous number line.
         unwrapped_center = center
         unwrapped_start = start
@@ -96,7 +101,6 @@ class WindowBuddySensor(SensorEntity):
 
 
     def _precise_exposure(self) -> float:
-
         if self._get_sun_azimuth() is None:
             return 0.0
 
@@ -114,6 +118,13 @@ class WindowBuddySensor(SensorEntity):
         if sun_state is None or sun_state.state == STATE_UNAVAILABLE:
             return None  # If the sun entity is unavailable, return None
         return sun_state.attributes.get("azimuth")
+
+    def _get_sun_elevation(self) -> float | None:
+        """Get the elevation of the configured sun entity."""
+        sun_state = self.hass.states.get(self.sun_entity_id)
+        if sun_state is None or sun_state.state == STATE_UNAVAILABLE:
+            return None  # If the sun entity is unavailable, return None
+        return sun_state.attributes.get("elevation")
 
     def _azimuth_start(self) -> int:
         result = self._entry.data.get(CONF_AZIMUTH, 0)
