@@ -1,0 +1,12 @@
+{
+    "domain": "window_buddy",
+    "name": "Window Buddy",
+    "version": "0.1.0",
+    "documentation": "https://example.com",
+    "dependencies": [],
+    "codeowners": [
+        "@yourusername"
+    ],
+    "config_flow": true,
+    "iot_class": "local_polling"
+}

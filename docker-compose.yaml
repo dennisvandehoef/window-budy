@@ -1,0 +1,10 @@
+services:
+  home-assistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: home-assistant
+    ports:
+     - 8123:8123
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./custom_components:/config/custom_components
+      - ./ha-dev-config/configuration.yaml:/config/configuration.yaml

@@ -1,0 +1,1 @@
+DOMAIN = "window_buddy"
