@@ -8,7 +8,8 @@ This is still under development and not ready to be used.
 
 ### Rudimental functionallity
 
-- [] .....
+- [] Other shapes that square
+- [] Objects blocking
 
 ### first improvements
 

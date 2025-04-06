@@ -39,14 +39,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema({
                 vol.Required(CONF_NAME): TextSelector(),
-                vol.Required(CONF_ENTITY_ID): EntitySelector(
-                    EntitySelectorConfig(domain=["sun"])
-                ),
                 vol.Required(CONF_CALCULATION_MODE, default="simple"): SelectSelector(
                     SelectSelectorConfig(
                         options=CALCULATION_MODES,
                         translation_key="calculation_mode"
                     )
+                ),
+                vol.Required(CONF_ENTITY_ID, default="sun.sun"): EntitySelector(
+                    EntitySelectorConfig(domain=["sun"])
                 ),
             })
         )

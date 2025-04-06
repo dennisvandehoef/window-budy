@@ -3,7 +3,7 @@
         "step": {
             "user": {
                 "title": "Window Buddy Setup",
-                "description": "Choose how Window Buddy should estimate sun exposure.\n\n**Simple**: Only considers the sun's position (azimuth).\n**Precise**: Also considers window dimensions and will later support blocking objects."
+                "description": "Choose how Window Buddy should estimate sun exposure.\n\n**Simple**: Only considers the sun's position (azimuth).\n**Precise**: Also considers window dimensions and supports blocking objects."
             },
             "mode_specific": {
                 "title": "Calculation Details",
