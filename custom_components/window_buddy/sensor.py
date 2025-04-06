@@ -41,35 +41,65 @@ class WindowBuddySensor(SensorEntity):
     @property
     def native_value(self) -> float:
         """Return the estimated sun exposure value."""
-        if self._get_sun_azimuth() is None:
-            return 0.0
-
         if self._entry.data[CONF_CALCULATION_MODE] == "simple":
             return self._simple_exposure()
         return self._precise_exposure()
 
     def _simple_exposure(self) -> float:
-        """Calculate exposure based on azimuth, considering circular ranges."""
-        start_azimuth = self._azimuth_start()
-        end_azimuth = self._azimuth_end()
-        sun_azimuth = self._get_sun_azimuth()
+        """
+        Calculate exposure based on sun's azimuth relative to the window's defined range.
+        The window is defined by:
+          - start = center - 90°
+          - center = configured window azimuth (100% exposure)
+          - end = center + 90°
+        Exposure rises linearly from start (0%) to center (100%), then falls linearly to end (0%).
+        Handles circular ranges (i.e. if the range crosses 0°).
+        """
+        # Get configured center (window azimuth), then compute start and end.
+        center = self._entry.data.get(CONF_AZIMUTH, 0)
+        start = (center - 90) % 360
+        end = (center + 90) % 360
 
-        # If the range crosses the 360-degree mark, we need to handle it in two parts
-        if start_azimuth > end_azimuth:
-            # Two parts: from start_azimuth to 360, then from 0 to end_azimuth
-            if sun_azimuth >= start_azimuth or sun_azimuth <= end_azimuth:
-                # Calculate exposure for the first part (start to 360)
-                if sun_azimuth >= start_azimuth:
-                    exposure_part1 = (360 - start_azimuth + sun_azimuth) / (360 - start_azimuth + end_azimuth) * 100
-                else:
-                    exposure_part1 = (360 - start_azimuth + sun_azimuth) / (360 - start_azimuth + end_azimuth) * 100
-                return round(exposure_part1, 2)
+        sun = self._get_sun_azimuth()
+        if sun is None:
+            return 0.0
+
+        # Unwrap the angles so that we have a continuous number line.
+        unwrapped_center = center
+        unwrapped_start = start
+        unwrapped_end = end
+        unwrapped_sun = sun
+
+        # Adjust start and end if necessary so that start < center < end.
+        if unwrapped_start > unwrapped_center:
+            unwrapped_start -= 360
+        if unwrapped_end < unwrapped_center:
+            unwrapped_end += 360
+
+        # Adjust sun similarly: if sun is less than start, add 360.
+        if unwrapped_sun < unwrapped_start:
+            unwrapped_sun += 360
+
+        # If sun is outside the window range, return 0.
+        if unwrapped_sun < unwrapped_start or unwrapped_sun > unwrapped_end:
+            return 0.0
+
+        # Piecewise linear interpolation:
+        if unwrapped_sun <= unwrapped_center:
+            # Rising edge: from start (0%) to center (100%)
+            exposure = (unwrapped_sun - unwrapped_start) / (unwrapped_center - unwrapped_start) * 100
         else:
-            # Normal case: Start azimuth is less than end azimuth
-            return round((sun_azimuth - start_azimuth) / (end_azimuth - start_azimuth) * 100, 2)
+            # Falling edge: from center (100%) to end (0%)
+            exposure = (unwrapped_end - unwrapped_sun) / (unwrapped_end - unwrapped_center) * 100
+
+        return round(exposure, 2)
 
 
     def _precise_exposure(self) -> float:
+
+        if self._get_sun_azimuth() is None:
+            return 0.0
+
         # Dummy logic using width and height
         azimuth = self._entry.data.get(CONF_AZIMUTH, 0)
         width = self._entry.data.get(CONF_WIDTH, 1.0)
